@@ -75,7 +75,52 @@ which after taking the reciprocal, agrees with the result. \qed
 \end{problem}
 
 \begin{problem}
+We first set up some global variables, and compute the Chebyshev nodes:
+\begin{matlab}
+global Xs n xs;
+Xs = (-1 : 0.01 : 1);
 
+n = 20;
+xs = cos((0:n-1) * pi / (n-1));
+\end{matlab}
+We implement the barycentric interpolation using the explicit formula for weights. Note that we didn't account for the case where \(x = x_i\) coincides with one of the nodes. In this case the algorithm should return \texttt{Inf / Inf = NaN}, which will not show up on the graph.
+\begin{matlab}
+function y = barycentric(ys, x)
+  global n xs;
+  dx = (-1) .^ (0:n-1) ./ (x - xs);
+  dx([1;n]) = dx([1;n]) ./ 2;
+  y = sum(ys .* dx) / sum(dx);
+end
+\end{matlab}
+And finally a helper function that plots the difference for us:
+\begin{matlab}
+function interpolate(f)
+  global xs Xs;
+  ys = arrayfun(f, xs);
+  plot(Xs, arrayfun(@(x) barycentric(ys, x) - f(x), Xs));
+end
+\end{matlab}
+For instance, the difference for the function \(f(x) = |x|\) using 20 nodes is shown below.
+\begin{center}
+\includegraphics[width=0.7\textwidth]{Hw3-Fig1.jpg}
+\end{center}
+
+For the function \(f(x) = \tanh(50\pi x)\), the closest singularity is at \(x = \pm \frac{i}{100}\). Since the semi-minor axis of the Bernstein ellipse \(E_\rho\) is \(\frac{\rho - \rho^{-1}}{2}\), we solve that \(\rho = \frac{\sqrt{10001} + 1}{100} \approx 1.01005\).
+This means the Chebyshev interpolations satisfy
+\[|f - p_n| \le \frac{4 M \rho^{-n}}{\rho - 1}
+\approx 400 \times 1.01^{-n}.\]
+We verify our predictions below.
+
+We choose \(f_1(x) = |x|\), \(f_2(x) = x|x|\), and \(f_3(x) = e^{-3x^2}\). This results in the following error graph:
+\begin{center}
+\includegraphics[width=0.45\textwidth]{Hw3-Fig2-1.jpg}
+\includegraphics[width=0.45\textwidth]{Hw3-Fig2-2.jpg}
+\end{center}
+It is seen that differentiable functions generally converge faster. Finally we look at \(\tanh(50\pi x)\).
+\begin{center}
+\includegraphics[width=0.7\textwidth]{Hw3-Fig3.jpg}
+\end{center}
+The lines are almost parallel, so our predictions are correct up to a constant. And since this is an upper bound, the prediction is indeed higher than the actual error. However it is off by a few hundred times, which probably means that \(\tanh\) is relatively well-behaved.
 \end{problem}
 
 \begin{problem}
@@ -83,5 +128,13 @@ We have \(h = \frac2{n+1}\), plugging into the previous results we get
 \[\frac{\lambda_{n/2}}{\lambda_n} = \frac{(-1)^{n/2}h^{n-1} (\frac n2)! (\frac n2)!}{(-1)^0 h^{n-1} n!} = (-1)^{n/2} {n \choose \frac n2}.\]
 This ratio grows as \(O(4^n / \sqrt n)\), which is very fast. Therefore for a generic \(x\), the factor \(\lambda_{n/2}/\lambda_n\) will dominate the factor \((x - x_{n/2})/(x-x_n)\), thus by the second form of the barycentric formula, the polynomial will be much more sensitive to changes of the center datapoint compared to the endpoints.
 \end{problem}
+
+\newpage
+\section*{Appendix: Souce Code}
+Code can also be found at 
+\begin{center}
+\texttt{https://github.com/Trebor-Huang/Numerical-Analysis-Homework}
+\end{center}
+\matlabfile{Hw3.m}
 
 \end{document}
