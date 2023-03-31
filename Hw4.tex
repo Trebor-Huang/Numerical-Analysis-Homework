@@ -1,0 +1,51 @@
+\documentclass{homework}
+\title{Homework 4}
+\begin{document}
+\maketitle
+
+\begin{problem}
+Induction on \(k\). For \(k = 0\) \(\mathcal S_k\) are functions constant on each \((x_i, x_{i+1})\). And \[(x - x_i)_+^0 = \begin{cases}
+  1 & x \ge x_i\\
+  0 & x < x_i.
+\end{cases}\]
+This obviously serves as a basis. Suppose \(\{1,x,\dots, x^{k-1}, (x-x_i)_+^{k-1}\}\) forms a basis for \(\mathcal S_{k-1}\), then by the fundamental theorem of calculus, for each function \(f \in \mathcal S_{k}\), we can differentiate to obtain a function in \(\mathcal S_{k-1}\), and then integrate to get the original function up to a constant. By the induction hypothesis we have
+\[f'(x) = \sum_{j=0}^{k-1} a_j x^j + \sum_{j=1}^g b_j (x-x_j)_+^{k-1}.\]
+Integrating, we get
+\[f(x) = C + \sum_{j=0}^{k-1} \frac{a_j}{j+1} x^{j+1} + \sum_{j=1}^g \frac{b_j}{k} (x-x_j)_+^{k},\] since \(\int (x-x_j)_+^{k-1} \d[x] = \frac1k (x-x_k)^{k}_+ + C\). This shows that \(f\) can be expressed by the desired basis.
+\end{problem}
+
+\begin{problem}
+It suffices to prove a more general result: Given \((n+1)\) nodes \(x_0, \dots, x_n\), and up to \(m\)-th derivatives at each nodes, then the error is
+\[f(x) - H(x) = \frac{f^{(K)}(\xi)}{K!}\prod_{i=0}^n (x - x_i)^{m+1},\]
+where \(K = (n+1)(m+1)\). To prove this, we consider \(g(x) = f(x) - H(x) - C \prod_i (x-x_i)^{m+1}\), where \(C\) is some constant. We choose \(C\) so that \(g(u) = 0\) for some \(u\). Then we have \(g^{(k)}(x_i) = 0\) for each \(k \le m\). By repeatedly applying Rolle's theorem, we see that in each \((x_i, x_{i+1})\), taking one derivative produces one more zero (there may be other zeroes, but we can be sure of one more), because the boundary is guaranteed to be zero. Therefore \(g^{(m)}\) would have \(m\) zeroes in each interval, and we have the initial zero we obtained by choosing \(C\) suitably, and an additional set of \(n+1\) zeros at each \(x_i\). This is a grand total of \(mn + n + 2\). Continuing to take derivatives and applying Rolle's theorem (but this time the boundary is not guaranteed to be zero), each additional time we take the derivative, we can be sure of one fewer zero. Therefore \(g^{(mn + n + m+1)} = g^{(K)}\) has at least one zero. Let that zero be \(\xi\). We compute
+\[0 = g^{(K)}(\xi) = f^{(K)}(\xi) - H^{(K)}(\xi) - K! \cdot C.\]
+Since \(H\) has degree \(K-1\), the derivative vanishes, and we are left with
+\[f^{(K)}(\xi) = K! \cdot C.\]
+Recall that we chose \(C = [f(u) - H(u)]\prod_{i}(u-x_i)^{-(m+1)}\). Substituting and rearranging, we get
+\[f(u) - H(u) = \frac{f^{(K)}(\xi)}{K!} \prod_{i=0}^n (u - x_i)^{m+1},\]
+as desired.
+\end{problem}
+
+\begin{problem}
+For convenience, we recall
+\[f[x_0] = f(x_0), \quad f[x_0,\vec x,x_n] = \frac{f[\vec x,x_n] - f[x_0,\vec x]}{x_n - x_0}.\]
+\begin{enumerate}[label=(\roman*)]
+\item Use induction. For \(n=0\) it is obvious if we interpret \(f[x,x] = \frac{f(x)-f(x)}{x-x}\) as a limit computing the derivative. For \(n > 0\), we have
+\begin{align*}
+\frac{\partial}{\partial x_n} f[x_0, \vec x, x_n] &= \frac{\partial_n f[\vec x, x_n]}{x_n - x_0} - \frac{f[\vec x, x_n] - f[x_0, \vec x]}{(x_n - x_0)^2}\\
+&= \frac{f[\vec x, x_n, x_n]}{x_n - x_0} - \frac{f[x_0, \vec x, x_n]}{x_n - x_0}\\
+&= f[x_0,\vec x, x_n, x_n].
+\end{align*}
+\item Since \(n\) is even, we take \(m = n/2\). Without loss of generality we can scale to \(b = m, a = -m\). We need to prove
+\[W(t) = \int_{-m}^t \prod_{k=-m}^m (x - k) \d[x] > 0 \quad (-m < t < m).\]
+Since the integrand is odd, the integration is even. We only need to deal with \(t \le 0\). Clearly \(\omega(x) = \prod_{k=-m}^m (x-k)\) alternates between positive and negative on intervals \([k, k+1]\), starting from a positive one \([-m, -m+1]\). It suffices to prove that the intergration of each positive interval is larger in absolute value than the next negative interval. And to this end, it suffices to prove that \(\omega(t-1) > -\omega(t)\) for each \(t \in (-m + 2k-1, -m+2k)\). But this is easy, because
+\begin{align*}
+\omega(t-1) + \omega(t) &= \prod_{k=-m+1}^{m+1}(t-k) + \prod_{k=-m}^m(t-k)\\
+&= (t-m + t + m - 1)\prod_{k=-m}^{m-1}(t-k)\\
+&= (2t - 1) \prod_{k=-m}^{m-1}(t-k).
+\end{align*}
+Counting the number of negative signs, we get the desired result.\qed
+\end{enumerate}
+\renewcommand{\qedsymbol}{}
+\end{problem}
+\end{document}
